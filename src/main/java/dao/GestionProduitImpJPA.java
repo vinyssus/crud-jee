@@ -49,8 +49,8 @@ public class GestionProduitImpJPA implements IGestion {
 
 	@Override
 	public List<Produit> getAllProductsBMC(String motcle) {
-		Query q=em.createQuery("select p from produit p where p.nom like :x");
-		q.setParameter("x", "%"+motcle+"%");
+		Query q=em.createQuery("select p from Produit p where p.nomP like :x");
+		q.setParameter(0,"%"+motcle+"%");
 		return q.getResultList();
 	}
 

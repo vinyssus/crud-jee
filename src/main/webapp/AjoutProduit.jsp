@@ -1,8 +1,7 @@
 
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-    <%@page import="dao.entities.Produit"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@page import="dao.entities.Produit"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +28,15 @@
   <div class="form-group">
       <label>quantité</label>
     <input type="quantite" class="form-control" id="quantite" name="quantite" placeholder="quantite" value="${produit.quantite }">
-  </div>
+  </div><br>
+  <div class="mb-3">
+		  <label for="Categorie" class="form-label">Categorie:</label>
+		  <select name="categorie"><option>Chose here</option>
+		    <c:forEach items="${listeC}" var="c">
+		     <option value=${c.id} <c:if test="${produit.categorie.id==c.id}"> selected="true"</c:if>>${c.nom}</option>
+		    </c:forEach>
+		  </select>
+		</div>
   <br><br>
   <button type="submit" class="btn btn-primary" name="action" value="save">Submit</button>
 </form>

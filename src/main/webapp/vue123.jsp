@@ -1,6 +1,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="dao.entities.Produit"%>
+<%@page import="dao.entities.Categorie"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -30,6 +31,7 @@
       <th scope="col">Nom</th>
       <th scope="col">Prix</th>
       <th scope="col">Quantité</th>
+      <th scope="col">Categorie</th>
       <th scope="col">Action</th>
     </tr>
   </thead>
@@ -40,13 +42,12 @@
 		<td>${p.nomP} </td>
 		<td>${p.prix}</td>
 		<td>${p.quantite} </td>
-		<td><a href="viny?action=supprimer&id=${p.id}" class="btn btn-danger">Supprimer</a></td>
-		<td><a href="viny?action=update&id=${p.id}" class="btn btn-success">editer</a></td>		
+		<td>${p.categorie.nom} </td>
+		<td><a href="viny?action=supprimer&id=${p.id}" class="btn btn-danger">Supprimer</a>
+		<a href="viny?action=update&id=${p.id}" class="btn btn-success">editer</a></td>	
 	</tr>
    </c:forEach>
   </tbody>
 </table>
-
-
 </body>
 </html>

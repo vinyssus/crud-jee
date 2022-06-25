@@ -10,15 +10,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.GestionCategorieJPA;
 import dao.GestionProduitImpJPA;
 import dao.IGestion;
+import dao.IGestionCategorie;
 import dao.IGestionmpl;
+import dao.entities.Categorie;
 import dao.entities.Produit;
 
 /**
  * Servlet implementation class Servlet1
  */
-@WebServlet("/viny")
+@WebServlet("/vinyssus")
 public class Servlet1 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -34,14 +37,17 @@ public class Servlet1 extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     IGestion gestion;
+    IGestionCategorie gestionC;
     @Override
     public void init() throws ServletException {
     	gestion = new GestionProduitImpJPA();
+    	gestionC = new GestionCategorieJPA();
     	super.init();
     }
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		List<Produit> liste = null;
+		List<Categorie> listeC = null;
 		/*PrintWriter out = response.getWriter();
 		out.print("<html>");
 		out.print("<body>");
@@ -52,11 +58,12 @@ public class Servlet1 extends HttpServlet {
 		out.print("</table>");
 		out.print("</body>");
 		out.print("</html>");     */   
-		String action = request.getParameter("action");    
+		String action = request.getParameter("action"); 
 		
 		if (action==null) {
 			
 			liste=gestion.getAllProducts();
+			listeC=gestionC.getAllCategories();
 			
 			if(liste.isEmpty()) {
 				request.setAttribute("msg", "liste vide");
@@ -75,8 +82,27 @@ public class Servlet1 extends HttpServlet {
 			else if(action.equalsIgnoreCase("supprimer")){
 				int id=Integer.parseInt(request.getParameter("id"));
 				gestion.supprimerProduit(id);
-				liste=gestion.getAllProducts();
-				
+				request.setAttribute("listeP",gestion.getAllProducts() );
+				request.getRequestDispatcher("vue123.jsp").forward(request, response);
+			}
+				else if(action.equalsIgnoreCase("supprimerC"))
+				{
+					
+					int id =  Integer.parseInt(request.getParameter("idc")) ; 
+					Categorie cat = gestionC.getCategorie(id);
+					 for (Produit p : gestion.getAllProducts()) {
+						 if ((p.getCategorie()!=null)) {
+						 if ((p.getCategorie().getNom()).equals(cat.getNom()) ) {
+							 p.setCategorie(null);
+							 gestion.mettreAjourProduit(p);
+						 }
+						 }
+					 }
+					 gestionC.deleteCategorie(id);
+					 request.setAttribute("listeC",gestionC.getAllCategories() );
+					request.getRequestDispatcher("listeCategorie.jsp").forward(request, response);	
+					
+				}
 				
 				
 				
@@ -94,12 +120,14 @@ public class Servlet1 extends HttpServlet {
 				Produit p = new Produit(nom,prix,quantite);
 				gestion.ajouterProduit(p);
 				request.setAttribute("listeP", gestion.getAllProducts());
+				request.setAttribute("categories", gestionC.getAllCategories());
 				request.getRequestDispatcher("listeP.jsp");
 			}
 			else if (action.equalsIgnoreCase("update")) {
 				int id = Integer.parseInt(request.getParameter("id"));
 				request.setAttribute("produit", gestion.getProduct(id));
 				request.getRequestDispatcher("AjoutProduit.jsp").forward(request, response);
+				request.setAttribute("categories", gestionC.getAllCategories());
 			}
 			else if (action.equalsIgnoreCase("ajouter") && request.getMethod().equalsIgnoreCase("post")){
 				
@@ -107,10 +135,13 @@ public class Servlet1 extends HttpServlet {
 				double prix = Double.parseDouble(request.getParameter("prix"));
 				int quantite = Integer.parseInt(request.getParameter("quantite"));
 				int idp = Integer.parseInt(request.getParameter("idp"));
+				int idcat = Integer.parseInt(request.getParameter("categorie"));
+				Categorie c = new GestionCategorieJPA().getCategorie(idcat);
 				
 				if (idp!=0) {
 					
 					Produit p = gestion.getProduct(idp);
+					        p.setCategorie(c);
 							p.setNomP(nom);
 					        p.setPrix(prix);
 					        p.setQuantite(quantite);
